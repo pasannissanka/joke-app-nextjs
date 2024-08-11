@@ -43,6 +43,7 @@ export const acceptJoke = async (jokeId: string) => {
   const baseUrl = process.env.NEXT_PUBLIC_MODERATE_API_URL;
   const response = await axios.post<IResponse<boolean>>(
     `${baseUrl}/v1/moderation/pending-jokes/${jokeId}/accept`,
+    {},
     {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("access-token")}`,
@@ -58,6 +59,7 @@ export const rejectJoke = async (jokeId: string) => {
   const baseUrl = process.env.NEXT_PUBLIC_MODERATE_API_URL;
   const response = await axios.post<IResponse<boolean>>(
     `${baseUrl}/v1/moderation/pending-jokes/${jokeId}/reject`,
+    {},
     {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("access-token")}`,
