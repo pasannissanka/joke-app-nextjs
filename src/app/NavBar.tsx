@@ -58,17 +58,23 @@ const moderatorLoginSchema = z.object({
   }),
 });
 
-export default function NavBar() {
+export default function NavBar({
+  isModerator = false,
+}: {
+  isModerator?: boolean;
+}) {
   return (
-    <header className="bg-background text-foreground py-4 px-6 relative">
+    <header className="bg-background text-foreground py-4 px-6 fixed w-full">
       <div className="container mx-auto flex justify-between items-center">
-        <Link href="#" className="text-xl font-bold" prefetch={false}>
+        <Link href="/" className="text-xl font-bold" prefetch={false}>
           PunPal
         </Link>
-        <nav className="items-center gap-4 flex">
-          <AddJokeDialog />
-          <ModeratorLoginDialog />
-        </nav>
+        {!isModerator && (
+          <nav className="items-center gap-4 flex">
+            <AddJokeDialog />
+            <ModeratorLoginDialog />
+          </nav>
+        )}
       </div>
     </header>
   );
@@ -203,11 +209,13 @@ const ModeratorLoginDialog = () => {
   });
 
   async function onSubmit(values: z.infer<typeof moderatorLoginSchema>) {
-    await mutation.mutateAsync({
+    const data = await mutation.mutateAsync({
       password: values.password,
       username: values.username,
     });
     form.reset();
+
+    localStorage.setItem("access-token", data.token);
 
     router.push("/moderate");
   }
@@ -261,7 +269,9 @@ const ModeratorLoginDialog = () => {
               />
             </div>
             <DialogFooter>
-              <Button type="submit">Save changes</Button>
+              <DialogClose asChild>
+                <Button type="submit">Save changes</Button>
+              </DialogClose>
             </DialogFooter>
           </form>
         </Form>

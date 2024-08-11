@@ -28,6 +28,7 @@ export interface ISubmittedJoke {
   id: string;
   joke: string;
   joke_type_id: string;
+  jokeType?: IJokeType;
 }
 
 export interface ISubmitJokeBody {
