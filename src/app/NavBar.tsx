@@ -63,6 +63,8 @@ export default function NavBar({
 }: {
   isModerator?: boolean;
 }) {
+  const isModeratorLoggedIn = localStorage.getItem("access-token");
+
   return (
     <header className="bg-background text-foreground py-4 px-6 fixed w-full">
       <div className="container mx-auto flex justify-between items-center">
@@ -72,7 +74,13 @@ export default function NavBar({
         {!isModerator && (
           <nav className="items-center gap-4 flex">
             <AddJokeDialog />
-            <ModeratorLoginDialog />
+            {isModeratorLoggedIn ? (
+              <Link href="/moderate" prefetch={false}>
+                Moderate
+              </Link>
+            ) : (
+              <ModeratorLoginDialog />
+            )}
           </nav>
         )}
       </div>

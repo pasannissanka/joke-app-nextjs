@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchRandomJoke } from "../api/deliver.api";
 import { Button } from "../components/ui/button";
+import Link from "next/link";
 
 export default function AppComponent() {
   const { data, isLoading, refetch } = useQuery({
@@ -28,7 +29,12 @@ export default function AppComponent() {
               <span className="text-muted-foreground">
                 {data?.data?.type?.type}
               </span>
-              <Button onClick={refetchRandomJoke}>Get Another</Button>
+              <div className="flex gap-2 py-4">
+                <Button onClick={refetchRandomJoke}>Get Another</Button>
+                <Link href="/list">
+                  <Button variant="link">View All</Button>
+                </Link>
+              </div>
             </div>
           ) : (
             <div className="flex items-center justify-center h-full">

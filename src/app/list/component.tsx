@@ -1,7 +1,7 @@
 "use client";
 
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   acceptJoke,
   fetchPendingJokes,
@@ -9,14 +9,13 @@ import {
 } from "../../api/moderate.api";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardFooter } from "../../components/ui/card";
-import { ISubmittedJoke } from "../../types/types";
+import { fetchJokes } from "../../api/deliver.api";
+import { IJoke } from "../../types/types";
 
-export default function ModerationComponent() {
-  const [page, setPage] = React.useState(1);
-
+export default function ListComponent() {
   const jokesInfiniteQuery = useInfiniteQuery({
     queryKey: ["jokes-all"],
-    queryFn: ({ pageParam }) => fetchPendingJokes(pageParam),
+    queryFn: ({ pageParam }) => fetchJokes(pageParam),
     getNextPageParam: (lastPage, pages) => {
       if (lastPage.data.length > 0) {
         return {
@@ -38,28 +37,8 @@ export default function ModerationComponent() {
 
     return pages.reduce((acc, page) => {
       return [...acc, ...page.data];
-    }, [] as ISubmittedJoke[]);
+    }, [] as IJoke[]);
   }, [jokesInfiniteQuery.data]);
-
-  const acceptJokeMutation = useMutation({
-    mutationKey: ["accept-joke"],
-    mutationFn: (jokeId: string) => {
-      return acceptJoke(jokeId);
-    },
-    onSuccess: () => {
-      jokesInfiniteQuery.refetch();
-    },
-  });
-
-  const rejectJokeMutation = useMutation({
-    mutationKey: ["accept-joke"],
-    mutationFn: (jokeId: string) => {
-      return rejectJoke(jokeId);
-    },
-    onSuccess: () => {
-      jokesInfiniteQuery.refetch();
-    },
-  });
 
   return (
     <div className="flex flex-col items-center text-center gap-2 max-w-2xl w-full p-8">
@@ -69,30 +48,16 @@ export default function ModerationComponent() {
         </div>
       ) : (
         <>
-          {jokes.map((joke) => (
+          {jokes?.map((joke) => (
             <Card key={joke.id} className="w-full py-2">
               <CardContent className="py-2">
                 <div className="flex flex-col gap-2">
-                  <h1>{joke.joke}</h1>
+                  <h1>{joke?.joke}</h1>
                   <span className="text-sm text-muted-foreground">
-                    {joke.jokeType?.type}
+                    {joke?.type?.type}
                   </span>
                 </div>
               </CardContent>
-              <CardFooter className="flex justify-end gap-2 py-0">
-                <Button
-                  onClick={() => acceptJokeMutation.mutate(joke.id)}
-                  variant="outline"
-                >
-                  Accept
-                </Button>
-                <Button
-                  onClick={() => rejectJokeMutation.mutate(joke.id)}
-                  variant="destructive"
-                >
-                  Delete
-                </Button>
-              </CardFooter>
             </Card>
           ))}
           <Button
