@@ -6,7 +6,7 @@ import { Button } from "../components/ui/button";
 
 export default function AppComponent() {
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["posts"],
+    queryKey: ["jokes"],
     queryFn: () => fetchRandomJoke(),
   });
 
@@ -24,9 +24,9 @@ export default function AppComponent() {
         <>
           {data ? (
             <div className="flex flex-col items-center text-center gap-2 max-w-2xl w-full p-8">
-              <h1 className="text-2xl font-bold mb-4">{data.data.joke}</h1>
+              <h1 className="text-2xl font-bold mb-4">{data?.data?.joke}</h1>
               <span className="text-muted-foreground">
-                {data.data.type.type}
+                {data?.data?.type?.type}
               </span>
               <Button onClick={refetchRandomJoke}>Get Another</Button>
             </div>
