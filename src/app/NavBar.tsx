@@ -36,7 +36,9 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import { submitJoke } from "../api/submit.api";
-import { ISubmitJokeBody } from "../types/types";
+import { ILoginRequest, ISubmitJokeBody } from "../types/types";
+import { loginModerator } from "../api/moderate.api";
+import { useRouter } from "next/navigation";
 
 const submitJokeSchema = z.object({
   joke: z
@@ -45,6 +47,15 @@ const submitJokeSchema = z.object({
   type: z
     .string({ required_error: "Joke is required" })
     .min(1, { message: "Joke type is required" }),
+});
+
+const moderatorLoginSchema = z.object({
+  username: z.string({ required_error: "Username is required" }).email({
+    message: "Username should be an email",
+  }),
+  password: z.string({ required_error: "Password is required" }).min(1, {
+    message: "Password is required",
+  }),
 });
 
 export default function NavBar() {
@@ -56,13 +67,7 @@ export default function NavBar() {
         </Link>
         <nav className="items-center gap-4 flex">
           <AddJokeDialog />
-          <Link
-            href="#"
-            className="hover:text-muted-foreground"
-            prefetch={false}
-          >
-            Moderator Login
-          </Link>
+          <ModeratorLoginDialog />
         </nav>
       </div>
     </header>
@@ -179,21 +184,87 @@ const AddJokeDialog = () => {
   );
 };
 
-const ModeratorLoginDialog = ({ trigger }: { trigger: React.ReactNode }) => {
+const ModeratorLoginDialog = () => {
+  const router = useRouter();
+
+  const mutation = useMutation({
+    mutationKey: ["login-moderator"],
+    mutationFn: (data: ILoginRequest) => {
+      return loginModerator(data);
+    },
+  });
+
+  const form = useForm<z.infer<typeof moderatorLoginSchema>>({
+    resolver: zodResolver(moderatorLoginSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof moderatorLoginSchema>) {
+    await mutation.mutateAsync({
+      password: values.password,
+      username: values.username,
+    });
+    form.reset();
+
+    router.push("/moderate");
+  }
+
   return (
     <Dialog>
-      <DialogTrigger>{trigger}</DialogTrigger>
+      <DialogTrigger asChild>
+        <Button variant="ghost">Moderator Login</Button>
+      </DialogTrigger>
       <DialogContent className="absolute sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Edit profile</DialogTitle>
-          <DialogDescription>
-            Make changes to your profile here.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4"></div>
-        <DialogFooter>
-          <Button type="submit">Save changes</Button>
-        </DialogFooter>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <DialogHeader>
+              <DialogTitle>Sign in as Moderator</DialogTitle>
+              <DialogDescription>
+                Sign in to moderate jokes and other settings.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4">
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="username" {...field} />
+                    </FormControl>
+                    <FormDescription>Enter the username.</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>Enter your password</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <DialogFooter>
+              <Button type="submit">Save changes</Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

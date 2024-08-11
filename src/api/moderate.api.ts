@@ -1,5 +1,24 @@
 import axios from "axios";
-import { IResponse, ISubmittedJoke } from "../types/types";
+import {
+  ILoginRequest,
+  ILoginResponse,
+  IResponse,
+  ISubmittedJoke,
+} from "../types/types";
+
+export const loginModerator = async ({ username, password }: ILoginRequest) => {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+  const response = await axios.post<IResponse<ILoginResponse>>(
+    `${baseUrl}/api/auth`,
+    {
+      username,
+      password,
+    }
+  );
+
+  const data = response.data;
+  return data;
+};
 
 export const fetchPendingJokes = async ({
   limit,

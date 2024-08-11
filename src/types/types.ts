@@ -34,3 +34,17 @@ export interface ISubmitJokeBody {
   joke: string;
   joke_type_id: string;
 }
+
+export interface ILoginRequest {
+  username: string;
+  password: string;
+}
+
+export interface IAuthUser {
+  email: string;
+}
+
+export interface ILoginResponse {
+  user: IAuthUser;
+  access_token: string;
+}
