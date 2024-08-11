@@ -1,6 +1,5 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchRandomJoke } from "../api/deliver.api";
 import { Button } from "../components/ui/button";
@@ -29,9 +28,7 @@ export default function AppComponent() {
               <span className="text-muted-foreground">
                 {data.data.type.type}
               </span>
-              <Button variant={"default"} onClick={refetchRandomJoke}>
-                Get Another
-              </Button>
+              <Button onClick={refetchRandomJoke}>Get Another</Button>
             </div>
           ) : (
             <div className="flex items-center justify-center h-full">
