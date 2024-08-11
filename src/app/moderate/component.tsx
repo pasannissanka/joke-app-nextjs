@@ -15,7 +15,7 @@ export default function ModerationComponent() {
   const [page, setPage] = React.useState(1);
 
   const jokesInfiniteQuery = useInfiniteQuery({
-    queryKey: ["jokes-all"],
+    queryKey: ["submitted-jokes"],
     queryFn: ({ pageParam }) => fetchPendingJokes(pageParam),
     getNextPageParam: (lastPage, pages) => {
       if (lastPage.data.length > 0) {

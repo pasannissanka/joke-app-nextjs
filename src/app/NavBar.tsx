@@ -63,7 +63,8 @@ export default function NavBar({
 }: {
   isModerator?: boolean;
 }) {
-  const isModeratorLoggedIn = localStorage.getItem("access-token");
+  // TODO - Add some state management for this
+  const isModeratorLoggedIn = localStorage?.getItem("access-token");
 
   return (
     <header className="bg-background text-foreground py-4 px-6 fixed w-full">
